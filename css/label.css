@@ -1,0 +1,343 @@
+
+    
+.list-office{
+	border:1px;
+	border-style:solid ;
+	border-color:#6257ab ;
+	border-radius:0.1rem;
+	color: #6257AB;
+	padding: 0.02rem 0.03rem 0.01rem 0.03rem ;//上/右/下/左
+	margin-left: 0.4rem;
+	font-size: 0.28rem;
+	text-align: center;
+}
+.list-canfei{
+	border:1px;
+	border-style:solid ;
+	border-color:#e98f6c ;
+	border-radius:0.1rem;
+	color: #e98f6c;
+	padding: 0.01rem 0.03rem;
+	margin-left: 0.4rem;
+	font-size: 0.28rem;
+	text-align: center;
+}
+.list-chai{
+	border:1px;
+	border-style:solid ;
+	border-color:#6cc2e9 ;
+	border-radius:0.1rem;
+	color: #6cc2e9;
+	padding: 0.01rem 0.03rem;
+	margin-left: 0.4rem;
+	font-size: 0.28rem;
+	/*text-align: center;*/
+}
+.list-yu,.list-tan{
+	border:1px;
+	border-style:solid ;
+	border-color:#cc1c1c;
+	border-radius:0.1rem;
+	color: #cc1c1c ;
+	padding: 0.01rem 0.03rem;
+	font-size: 0.28rem;
+	text-align: center;
+	/*vertical-align: top;*/
+}
+
+
+.list-yihedui{
+	border:1px;
+	border-style:solid;
+	border-color:#7ab466;
+	border-radius: 0.1rem;
+	color: #7AB466;
+	padding: 0.01rem 0.1rem;
+	padding-right: 0.1rem;
+    padding-left: 0.1rem;
+	font-size: 0.28rem;
+	text-align: center;
+}
+.list-yishenqing{
+	border:1px;
+	border-style:solid;
+	border-color:#65a2bd;
+	border-radius: 0.1rem;
+	color: #65a2bd;
+	padding: 0.01rem 0.1rem;
+	padding-left: 0.1rem;
+	font-size: 0.28rem;
+	text-align: center;
+}
+
+.list-weihedui{
+	border:1px;
+	border-style:solid;
+	border-color:#808080;
+	border-radius: 0.1rem;
+	color: #808080;
+	padding: 1px 4px;
+	padding: 0.01rem 0.1rem;
+	padding-right: 0.1rem;
+    padding-left: 0.1rem;
+	font-size: 0.28rem;
+	text-align: center;
+}
+.list-weishenqing{
+	border:1px;
+	border-style:solid;
+	border-color:#808080;
+	border-radius: 0.1rem;
+	color: #808080;
+	padding: 0.01rem 0.1rem;
+	padding-left: 0.1rem;
+	font-size: 0.28rem;
+	text-align: center;
+}
+
+
+
+.list-headImg{
+	/*margin-left:0.2rem!important;*/
+	margin-right: 0.4rem!important;
+}
+.list-name{
+	font-size: 0.42rem;
+}
+.list-rightImg{
+	max-width: .21rem;
+	max-height: .39rem;
+}
+.list-content{
+	color: #808080;font-size: 0.36rem;margin-right: 0.2rem;line-height: initial;
+}
+.list-time{
+	font-size: 0.36rem;color: #808080;
+}
+.list-menu{
+	max-width: 0.5rem;margin-top: 0.16rem;s
+}
+.list-agreeBtn{
+	color: white;
+	background: #38adff;
+	border-radius:0.1rem;
+	font-size: 0.42rem;
+	padding: 0.1rem 0.2rem;
+	border-style: none;
+	width: 20%;
+	text-align: center;
+}
+.list-disagreeBtn{
+	color: white;
+	background: #d34f4f;
+	border-radius:0.1rem;
+	font-size: 0.42rem;
+	padding: 0.1rem 0.2rem;
+	border-style: none;
+	text-align: center;
+	width: 20%;
+	margin-right: 0.4rem;
+}
+.list-year{
+	background: #ededed;color:#808080 ;border-radius:0.1rem;text-align: center;padding: 0.05rem 0.1rem;font-size: 0.3rem;
+}
+
+/*//-------------------详情-------------------//*/
+.detail-leftImg{
+	width: 0.1rem;height: 0.26rem!important;margin-top: 0.04rem;
+	 no-repeat;
+}
+.detail-type{
+	color: #1b82d2;font-size: 0.3rem;margin-left: 0.2rem;
+}
+.detail-journey-number{
+	background: #a0a0a0;font-size:0.2rem;color: white;
+}
+.detail-journey-number-red{
+	background: #cc1c1c;font-size:0.2rem;color: white;
+}
+.detail-journey-site{
+	font-size: 0.43rem;color: #333333;
+}
+.detail-car{
+	width: 0.56rem;height: 0.36rem;margin-left: 0.22rem; vertical-align: -webkit-baseline-middle;
+}
+.detail-plane{
+	width: 0.35rem;height: 0.36rem;margin-left: 0.32rem; vertical-align: -webkit-baseline-middle;
+}
+.detail-arrowehead{
+	width: 1rem;height: 0.15rem; vertical-align: text-top;
+}
+.detail-journey-time{
+	color: #333333;font-size: 0.24rem;
+}
+.detail-title{
+	color: #808080;font-size: 0.36rem;
+}
+.detail-cost{
+	color: #333333;font-size: 0.36rem;
+}
+.detail-cost-red{
+	color: #cc1c1c;font-size: 0.36rem;
+}
+.detail-standard{
+	color: #416683;font-size: 0.36rem;
+}
+.detail-photo{
+	width: 1.12rem;height: 1.12rem;
+}
+.detail-photo-number{
+	color: #808080;font-size: 0.3rem;margin-left: 0.41rem;
+}
+.detail-leader-name{
+	font-size: 0.42rem;color: #333333;margin-left: 0.2rem;margin-right: 0.1rem;
+}
+.detail-leader-pass{
+	font-size: 0.3rem;border-radius: 0.1rem;background: #80c269;color: white; padding: 0.01rem 0.05rem;vertical-align: text-top;
+}
+.detail-leader-three{
+	width: 0.11rem;height: 0.13rem;margin-left: 10px;
+}
+.detail-leader-content{
+	font-size: 0.36rem;color: #333333;text-align:left;vertical-align: -webkit-baseline-middle;
+}
+.detail-leader-time{
+	color: #808080;font-size: 0.3rem;margin-left: 0.2rem;
+}
+.detail-textarea{
+	padding: 0.2rem 0.2rem;
+	border: 1px;
+	border-style: solid;
+	border-color: #808080;
+	background: white;
+	color: #808080;
+	width: 55%;
+    font-size: 0.42rem;
+    /*margin-right: 0.4rem;*/
+    margin-bottom: 0px;
+    line-height: 0.5rem;
+    margin-left: 15px;
+    
+}
+.detail-agreeBtn{
+	color: white;
+	background: #38adff;
+	border-radius:0.1rem;
+	font-size: 0.42rem;
+	padding: 0.1rem 0.2rem;
+	border-style: none;
+	width: 16%;
+	text-align: center;
+}
+
+.detail-disagreeBtn{
+	color: white;
+	background: #d34f4f;
+	border-radius:0.1rem;
+	font-size: 0.42rem;
+	padding: 0.1rem 0.2rem;
+	border-style: none;
+	text-align: center;
+		width: 16%;
+	margin-right: 0.2rem;
+}
+
+
+ .todoList-header{
+ 	background: #2385ff;
+ }
+ .todoList-back{
+ 	
+ 	color: #FFFFFF;
+ }
+ .todoList-more{
+ 	color: #FFFFFF;
+ 	
+ }
+ .todoList-title{
+ 	color: #FFFFFF;
+ }
+ .todoList-slider{
+ 	
+ 	background: white!important;
+ }
+.todoList-tableView0{
+	background: #F2F2F2!important;
+}
+.todoList-todoCell{
+	background: white;
+	padding: 0rem 0.4rem!important;
+	/*position: static;*/
+	padding-top: 15px!important;
+	padding-bottom: 0px!important;
+}
+.todoList-instanceName{
+	color: #333333;
+	font-size: 0.42rem;
+	margin-left: 0.15rem;
+}
+.todoList-totalFee{
+	color: #cc1c1c;
+	font-size: 0.42rem;
+}
+.todoList-buttonView{
+	background: white;
+	padding-top: 10px!important;
+	padding-bottom: 10px!important;
+	position: static;
+	margin-bottom: 0.2rem;
+}
+
+/*-------------------点击详情同意按钮弹出悬浮框----------------------*/
+.mui-popover .mui-popover-arrow:after {
+	height: 0!important;
+}
+.mui-popover .mui-popover-arrow:after {
+	height: 0;
+	width: 0;
+}
+.mui-popover {width: auto;border-radius: 0.1rem!important;}
+.mui-popover.mui-active {
+	top: 64px!important;
+	left: 40px!important;
+	right: 40px!important;
+}
+.mui-icon.mui-right:before {
+	padding-left: 5em!important;
+}
+.mui-popover {
+	position: fixed;
+}
+
+.titleP{
+	/*margin-right: 1.5rem;*/
+	text-align: center;
+	margin-top: 10px;
+	color: #333333;
+	font-size: 0.42rem;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+.deletBtn{
+	color: red;
+	font-size: 0.5rem;
+	line-height: 0.42;
+	margin-right: 15px;
+}
+
+/*加载动画*/
+.loading-block {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+    background: rgba(0,0,0,0.4);
+    /*display: none;*/
+    background: transparent;
+}

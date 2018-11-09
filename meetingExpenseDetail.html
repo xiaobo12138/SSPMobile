@@ -1,0 +1,645 @@
+<!--会议费报销-->
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no">
+		<title>会议费报销</title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/label.css" rel="stylesheet" />
+		<script src="js/rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-3.1.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/reques.js"></script>
+		<script src="js/adress.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/master.css" />
+		<style>
+			body {
+				background: white;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!--页脚-->
+		<div id="suspend" style="background: #ececec;position: fixed;z-index: 5000;bottom: 0px;right: 0;left: 0;padding-bottom: 10px;padding-top: 10px;">
+			<button class="mui-pull-right detail-agreeBtn" style="margin-right: 15px;" onclick="agree()">同意</button>
+			<button class="mui-pull-right detail-disagreeBtn" onclick="disAgree()">不同意</button>
+		</div>
+		<!--页头-->
+		<header id="header" class="mui-bar mui-bar-nav" style="background: #2385ff;">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" style="color: #FFFFFF;"></a>
+			<!--返回-->
+			<h1 class="mui-title" style="color: #FFFFFF;">详情</h1>
+		</header>
+		<!--主体-->
+		<div class="mui-content">
+			<ul id="content" class="mui-table-view" style="margin-bottom: 1.2rem;">
+				<!--个人信息-->
+				<li id="information" class="mui-table-view-cell" style="padding: 0rem 0.4rem!important;padding-top: 15px!important;padding-bottom: 15px!important;position: relative;">
+
+				</li>
+				<!--预算-->
+				<li id="budget" class="mui-table-view-cell mui-media" style="background:#FFFFFF;padding-top: 15px!important;padding-bottom: 15px!important;">
+
+				</li>
+
+				<!--单据照片-->
+				<li id="photos" class="mui-table-view-cell mui-media" style="background:#FFFFFF;">
+
+				</li>
+
+				<!--审批状态-->
+				<li id="approve" class="mui-table-view-cell mui-media" style="background:#FFFFFF;">
+
+				</li>
+			</ul>
+		</div>
+
+		<!--点击同意，弹出的悬浮界面-->
+		<div id="middlePopover" class="mui-popover" style="height: 400px;background: white;">
+			<div>
+				<button class="mui-pull-right deletBtn" onclick="colsePover()">x</button>
+				<p class="titleP">同意</p>
+			</div>
+			<div class="row mui-input-row">
+				<textarea id='question' class="mui-input-clear question" style="width: -webkit-fill-available;margin-left: 15px;margin-right: 15px;background: #ececec;">同意</textarea>
+			</div>
+			<div id="leader" style="margin-bottom: 15px;margin-left: 15px;display: none;">
+				<label for="director">是否主任审批：</label>
+				<input type="radio" name="director" value="1" checked="checked" style="color: red;" /> 是
+				<input type="radio" name="director" value="0" /> 否
+			</div>
+			<!--下一审批人-->
+			<div id="nextPeople" style="margin:15px;">
+				<p style="margin-bottom: 15px;">下一个审批人</p>
+				<table id="nextPerson" style="width: 100%;">
+				</table>
+			</div>
+			<!--提交-->
+			<button class="detail-agreeBtn" onclick="submit()" style="margin-right: 15px;margin-left: 15px;width: 90%;">提交</button>
+		</div>
+
+		<!--点击不同意弹出的浮层-->
+		<div id="disagreePopover" class="mui-popover" style="height: 200px;background: white;">
+			<div>
+				<button class="mui-pull-right deletBtn" onclick="colsePover()">x</button>
+				<p class="titleP">不同意</p>
+			</div>
+			<div class="row mui-input-row">
+				<textarea id='textContent' class="mui-input-clear question" placeholder="填写意见..." required="required" style="width: -webkit-fill-available;margin-left: 15px;margin-right: 15px;background: #ececec;"></textarea>
+			</div>
+			<button class="detail-agreeBtn" onclick="disSubmit()" style="margin-right: 15px;margin-left: 15px;width: 90%;">提交</button>
+		</div>
+
+		<!--加载动画-->
+		<div id="loadingPopover" class="mui-popover">
+			<div class="loading-block">
+				<img src="images/5-121204193R5-50.gif" style="width: 1rem;height: 1rem;">
+			</div>
+		</div>
+
+		<script>
+			//关闭浮层
+			function colsePover() {
+				mui('#middlePopover').popover('hide');
+				mui('#disagreePopover').popover('hide');
+			}
+
+			function agree() {
+				if(activityCode != "Activity8" && activityCode != "Activity9" && activityCode != "Activity11" && activityCode != "Activity56" && activityCode != "Activity22") {
+					mui.alert("报销管理员请到PC端处理", ' ', function() {
+
+					});
+				} else {
+					mui('#middlePopover').popover('show');
+				}
+			}
+
+			function disAgree() {
+				if(activityCode != "Activity8" && activityCode != "Activity9" && activityCode != "Activity11" && activityCode != "Activity56" && activityCode != "Activity22") {
+					mui.alert("报销管理员请到PC端处理", ' ', function() {
+
+					});
+				} else {
+					mui('#disagreePopover').popover('show');
+				}
+			}
+
+			//不同意提交
+			function disSubmit() {
+				//关闭浮层
+				mui('#disagreePopover').popover('hide');
+				var text = document.getElementById("textContent");
+				if(text.value.length <= 0) {
+					//提示：请写明不同意的原因
+					mui.alert("请写明不同意的原因", ' ', function() {
+						mui('#disagreePopover').popover('show');
+					});
+				} else {
+					var disUrl = get_Url() + '/iServer/common/rejectApply';
+					mui.ajax(disUrl, {
+						data: {
+							instanceId: instanceId,
+							userCode: useruuid,
+							checkMsg: text.value, //审批意见
+							type: '1', //驳回类型（1：驳回到起始节点 2：驳回到上个节点 3：驳回到指定节点）
+							workFlowCode: 'MeetingExpense'
+						},
+						dataType: '',
+						type: 'post',
+						headers: {
+							'token': token
+						},
+						beforeSend: function() {
+							mui('#loadingPopover').popover('show');
+						},
+						complete: function() {
+							mui('#loadingPopover').popover('hide');
+						},
+						success: function(data) {
+							var jsonData = JSON.parse(data);
+							mui.alert(jsonData.msg, ' ', function() {
+								goBack();
+							});
+						},
+						error: function(xhr, type, errerThrown) {
+							mui.toast(type);
+						}
+					});
+				}
+			}
+
+			//同意提交
+			function submit() {
+				//关闭浮层
+				mui('#middlePopover').popover('hide');
+				var text = document.getElementById("question");
+				var activityCode = '';
+				var isLeader = document.getElementsByName("director");
+				for(i = 0; i < isLeader.length; i++) {
+					if(isLeader[i].checked) {
+						isNeedManager = isLeader[i].value;
+					}
+				}
+				//下一审批人
+				var nextDirector = document.getElementsByName("nextDirector");
+				if(nextDirector.length > 0) {
+					for(i = 0; i < nextDirector.length; i++) {
+						if(nextDirector[i].checked) {
+							personId = personArr[i].OrgCode;
+						}
+					}
+				} else {
+					personId = 'zzdjsd';
+				}
+
+				//调同意接口
+				var url = get_Url() + '/iServer/meeting/submitApply?';
+				mui.ajax(url, {
+					data: {
+						id: idStr, //20180508300031820989
+						instanceId: instanceId, //d55d9b00-247a-4cfc-8531-e59ca5c3f3fe
+						approvalOpinion: text.value, //意见
+						loginUserCode: useruuid, //自己的账号
+						approvalNextUser: personId, //下一节点审批人id
+						approvalState: '同意', //审批状态
+					},
+					dataType: '',
+					type: 'post',
+					headers: {
+						'token': token
+					},
+					beforeSend: function() {
+						mui('#loadingPopover').popover('show');
+					},
+					complete: function() {
+						mui('#loadingPopover').popover('hide');
+					},
+					success: function(data) {
+						var jsonData = JSON.parse(data);
+						mui.alert(jsonData.msg, ' ', function() {
+							//返回上层界面
+							goBack();
+						});
+					},
+					error: function(xhr, type, errerThrown) {
+						//							mui.toast(type);
+						mui.toast('失败了');
+
+					}
+				});
+				/*$.ajax({
+					type: "post",
+					url: url,
+					data: myData,
+					beforeSend: function() {
+						mui('#loadingPopover').popover('show');
+					},
+					complete: function() {
+						mui('#loadingPopover').popover('hide');
+					},
+					success: function(data) {
+						var jsonData = JSON.parse(data);
+						mui.alert(jsonData.msg, ' ', function() {
+							//返回上层界面
+							goBack();
+						});
+					},
+					error: function(xhr, type, errorThrown) {
+						//异常处理；
+						console.log(type);
+						mui.toast('失败了');
+					}
+				});*/
+			}
+
+			function goBack() {
+				window.history.back(-1);
+				self.location = 'index.html';
+			}
+
+			function plusReady() {
+				//获取列表界面传回的数据
+				var temp = window.localStorage.getItem("SSP_listToDetail");
+				listType = JSON.parse(temp).listType;
+				idStr = JSON.parse(temp).id; //id名
+				var headImg = JSON.parse(temp).headImg;
+				var name = JSON.parse(temp).userName;
+				var type = JSON.parse(temp).instanceName;
+				var money = JSON.parse(temp).money;
+				var content = JSON.parse(temp).travelReason;
+				var state = JSON.parse(temp).state;
+				var time = JSON.parse(temp).time;
+				instanceId = JSON.parse(temp).instanceId;
+				workItemId = JSON.parse(temp).workItemId;
+				activityCode = JSON.parse(temp).activityCode;
+				workflowCode = JSON.parse(temp).workflowCode;
+				useruuid = JSON.parse(temp).useruuid;
+				token = JSON.parse(temp).token;
+
+				//先调选择下个审批人接口
+				var url = get_Url() + '/iServer/test/getNextNode';
+				var myData = {
+					workItemId: workItemId
+				};
+				$.ajax({
+					type: "post",
+					url: url,
+					data: myData,
+					success: function(data) {
+						var jsonData = JSON.parse(data);
+						//纸质单据送达的不显示
+						var peopleArr = jsonData.Result.SNodeList[0].OrgList;
+						personArr = new Array();
+						for(var i = 0; i < peopleArr.length; i++) {
+							if(peopleArr[i].OrgName != "纸质单据送达") {
+								personArr.push(peopleArr[i]);
+							}
+						}
+
+						var countP = personArr.length;
+						var nextPeople = document.getElementById("nextPeople");
+						if(countP == 0) {
+							nextPeople.style.display = "none";
+						}
+						var dex = Math.round(countP / 3); //小数转成整数（会四舍五入）
+
+						if(countP % 3 == 0) {
+							dex1 = dex;
+						} else {
+							dex1 = dex + 1;
+						}
+
+						for(var i = 0; i < dex1; i++) {
+							var personReq = "";
+							personReq += '<tr style="width: 100%;">';
+							for(var j = i * 3; j <= (i + 1) * 3 - 1; j++) {
+								if(j < countP) {
+									if(i == 0 && j == 0) {
+										personReq += '<td align="left"><label style="width: (100%/3);"><input type="radio" name="nextDirector" value="1" checked="checked"/></label>' + "   " + personArr[j].OrgName + '</td>';
+									} else {
+										personReq += '<td align="left"><label style="width: (100%/3);"><input type="radio" name="nextDirector" value="1"/></label>' + "   " + personArr[j].OrgName + '</td>';
+									}
+								}
+							}
+							personReq += '</tr>';
+
+							var table = document.getElementById("nextPerson");
+							var tr = document.createElement("tr");
+							tr.innerHTML = personReq;
+							table.appendChild(tr);
+						}
+
+					},
+					error: function(xhr, type, errorThrown) {
+						//异常处理；
+						console.log(type);
+						mui.toast('失败了');
+					}
+				});
+
+				var approveArr = new Array(); //审批状态
+				var photosArr = new Array(); //单据图片
+				var trafficArr = new Array(); //行程
+				var budgetArr = new Array(); //预算
+
+				//单据图片
+				var photosUrl = get_Url() + '/img/documents/PictureDisplay';
+				var myData = {
+					id: idStr
+				};
+				$.ajax({
+					type: "post",
+					url: photosUrl,
+					data: myData,
+					success: function(data) {
+						var jsonData = JSON.parse(data);
+						//alert('单据图片');
+						photosArr = jsonData.pd;
+						if(photosArr.length == 0) {
+							var pp = document.getElementById("photos");
+							pp.classList.add('mui-hidden');
+						} else {
+							//先过滤掉不是图片的附件
+							var picturesArr = new Array();
+							for(var j = 0; j < photosArr.length; j++) {
+								if(photosArr[j].fileType == "jpg" || photosArr[j].fileType == "png" || photosArr[j].fileType == "jpeg") {
+									picturesArr.push(photosArr[j]);
+								}
+							}
+							var photosCount = picturesArr.length;
+							var photosReq = '';
+							photosReq += '<img src="images/left.png" class="detail-leftImg"/>';
+							photosReq += '<span class="detail-type">单据照片</span>';
+							photosReq += '<div style="height: 15px;"></div>';
+							photosReq += '<table>';
+							photosReq += '<tr>';
+
+							for(var i = 0; i < photosCount; i++) {
+								photosReq += '<td style="width: 1.2rem;">';
+								var imgUrl = get_Url() + '/img/documents/getImagesById?id=' + picturesArr[i].id;
+								photosReq += '<img src=' + imgUrl + ' class="detail-photo" data-preview-src="" data-preview-group="1"/>';
+								photosReq += '<span class="detail-photo-number">' + (i + 1) + '</span>';
+								photosReq += '</td>';
+							}
+							photosReq += '</tr>';
+							photosReq += '</table>';
+							photosReq += '<div style="height: 10px;"></div>';
+							var li2 = document.getElementById("photos");
+							li2.innerHTML = photosReq;
+						}
+
+					},
+					error: function(xhr, type, errorThrown) {
+						//异常处理；
+						console.log(type);
+						mui.toast('失败了');
+					}
+				});
+				//审批状态
+				var approveUrl = get_Url() + '/iServer/comment/list?page=1&rows=100&sidx=id&sord=aesc';
+				var myData = {
+					instanceId: instanceId
+				};
+				$.ajax({
+					type: "get",
+					url: approveUrl,
+					data: myData,
+					success: function(data) {
+						//alert('你好审批状态模块');
+
+						var jsonData = JSON.parse(data);
+						//		   console.log(jsonData);
+						approveArr = jsonData.rows;
+						var approveCount = approveArr.length;
+						if(approveCount == 0) {
+							var po = document.getElementById("approve");
+							po.classList.add('mui-hidden');
+						} else {
+							var approveReq = '';
+							approveReq += '<img src="images/left.png" class="detail-leftImg"/>';
+							approveReq += '<span class="detail-type">审批状态</span>';
+							approveReq += '<div style="height: 15px;"></div>';
+							//
+							for(var i = 0; i < approveCount; i++) {
+								var time = get_Date((approveArr[i].approvalDate / 1000));
+								//截取字符串，显示月日时分秒
+								var approveTime = time.substring(5, 19);
+								approveReq += '<div style="margin-bottom: 10px;">';
+								approveReq += '<table style="width: 100%;">';
+								approveReq += '<tr style="width: 100%;">';
+								approveReq += '<td style="width: 45%;">';
+								approveReq += '<span class="mui-badge detail-journey-number" style="padding: 0.03rem 0.08rem;">' + (i + 1) + '</span>';
+								approveReq += '<span class="detail-leader-name">' + approveArr[i].approvalUserName + '</span>';
+								if(approveArr[i].approvalState == "同意" || approveArr[i].approvalState == "1") {
+									approveReq += '<span class="detail-leader-pass">同意</span>';
+								}
+								if(approveArr[i].approvalState == "不同意" || approveArr[i].approvalState == "0") {
+									approveReq += '<span class="detail-leader-pass" style="background: #d34f4f">不同意</span>';
+								}
+								approveReq += '<img src="images/three-pin.png" class="detail-leader-three"/>';
+								approveReq += '<div>';
+								approveReq += '<table style="width: 100%;">';
+								approveReq += '<tr>';
+								if(i == (approveCount - 1)) { //最后一个不显示...
+									approveReq += '<td>';
+									approveReq += '<p class="detail-leader-time" style="margin-left: 0.5rem;">' + approveTime + '</p>';
+									approveReq += '</td>';
+								} else {
+									approveReq += '<td style="padding: 0.04rem;" align="center">';
+									approveReq += '<div style="margin-top: -7px;"><span style="color: black;">.</span></div>';
+									approveReq += '<div style="margin-top: -11px;"><span style="color: black;">.</span></div>';
+									approveReq += '<div style="margin-top: -11px;"><span style="color: black;">.</span></div>';
+									approveReq += '</td>';
+									approveReq += '<td>';
+									approveReq += '<p class="detail-leader-time">' + approveTime + '</p>';
+									approveReq += '</td>';
+								}
+								approveReq += '</tr>';
+								approveReq += '</table>';
+								approveReq += '</div>';
+								approveReq += '</td>';
+								approveReq += '<td style="width: 55%;" class="detail-leader-content">' + approveArr[i].approvalOpinion + '</td>';
+								approveReq += '</tr>';
+								approveReq += '</table>';
+								approveReq += '</div>';
+							}
+							var li3 = document.getElementById("approve");
+							li3.innerHTML = approveReq;
+							//							content.appendChild(li3.innerHTML);
+						}
+					},
+					error: function(xhr, type, errerThrown) {
+						mui.toast(type);
+					}
+				});
+
+				//详细信息 
+				var url = get_Url() + '/iServer/meeting/getMeetingInfoById?';
+				var myData = {
+					id: idStr
+				};
+				$.ajax({
+					type: "post",
+					url: url,
+					data: myData,
+					success: function(data) {
+						var jsonData = JSON.parse(data);
+						stayArr = new Array();
+						stayArr = jsonData.userData.standardFee;
+						if(jsonData.status_code == 1) {
+							var li1 = document.getElementById("budget");
+							//展示预算数据
+							budgetArr = jsonData.userData.costInfoList;
+							//console.log(jsonData.userData);
+							if(budgetArr.length == 0) {
+								li1.classList.add('mui-hidden');
+							} else {
+								var budgetReq = "";
+								budgetReq += '<img src="images/left.png" class="detail-leftImg"/>';
+								budgetReq += '<span class="detail-type">预算</span>';
+								budgetReq += '<div style="height: 15px;">';
+								budgetReq += '</div>';
+								budgetReq += '<table style="width: 100%;">';
+								budgetReq += '<tr style="width: 100%;">';
+								budgetReq += '<td style="width: 15%;"  valign="top">';
+								budgetReq += '<p class="detail-title">名称</p>';
+								budgetReq += '</td>';
+								budgetReq += '<td style="width: 85%;"  align="right" valign="top">';
+								var name = '';
+								if(budgetArr[0].projectNameFictitious == null) {
+									if(budgetArr[0].centerCostFictitious == null) {
+										name = '';
+									} else {
+										name = budgetArr[0].centerCostFictitious;
+									}
+								} else {
+									name = budgetArr[0].projectNameFictitious;
+								}
+								budgetReq += '<p class="detail-cost">' + budgetArr[0].projectName + '</p>';
+								budgetReq += '</td>';
+								budgetReq += '</tr>';
+								budgetReq += '</table>';
+								budgetReq += '<li class="mui-table-view-cell mui-media" style="background:#FFFFFF;position: static;padding-left:0px;padding-right:0px;">';
+								budgetReq += '<span class="detail-title">单号</span>';
+								budgetReq += '<span class="mui-pull-right detail-cost">' + budgetArr[0].applyId + '</span>';
+								budgetReq += '</li>';
+								budgetReq += '<li class="mui-table-view-cell mui-media" style="background:#FFFFFF;position: static;padding-left:0px;padding-right:0px;">';
+								budgetReq += '</li>';
+								budgetReq += '<li class="mui-table-view-cell mui-media" style="background:#FFFFFF;padding-left:0px;padding-right:0px;">';
+								budgetReq += '<table style="width: 100%;">';
+								budgetReq += '<tr>';
+								budgetReq += '<td style="width: 30%;" align="right">';
+								budgetReq += '<div>';
+								budgetReq += '<span class="list-tan" style="vertical-align: text-top;">摊</span>';
+								budgetReq += '<span class="detail-cost">分摊金额</span>';
+								budgetReq += '</div>';
+								budgetReq += '<div>';
+								var contributionQuota = formatCurrency(budgetArr[0].contributionQuota);
+								budgetReq += '<span class="detail-cost">' + "￥" + contributionQuota + '</span>';
+								budgetReq += '</div>';
+								budgetReq += '</td>';
+								budgetReq += '</tr>';
+								budgetReq += '</table>';
+								budgetReq += '<li class="mui-table-view-cell mui-media" style="background:#FFFFFF;padding-left:0px;padding-right:0px;">';
+
+								var totalFee = formatCurrency(jsonData.userData.totalFee);
+								for(var i = 0; i < jsonData.userData.receptionFeeInfoList.length; i++) {
+									budgetReq += '<span class="detail-title">票号</span>';
+									budgetReq += '<span class="detail-standard">(' + jsonData.userData.receptionFeeInfoList[i].ticketNum + ')</span>';
+									budgetReq += '<span class="mui-pull-right detail-cost">' + formatCurrency(jsonData.userData.receptionFeeInfoList[i].feeCost) + '</span>';
+									budgetReq += '<div style="height: 0.4rem;"></div>';
+								}
+								budgetReq += '<div style="height: 0.4rem;"></div>';
+								budgetReq += '<span class="detail-cost">合计</span>';
+								var totalFee = formatCurrency(jsonData.userData.totalFee);
+								budgetReq += '<span class="mui-pull-right detail-cost">' + "￥" + totalFee + '</span>';
+								budgetReq += '<div style="height: 15px;"></div>';
+								budgetReq += '</li>';
+								li1.innerHTML = budgetReq;
+								//								content.appendChild(li1.innerHTML);
+							}
+
+						} else {
+							mui.toast('失败了');
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						mui.toast('请求失败了');
+					}
+				});
+
+				if(listType == "已办") {
+					var suspend = document.getElementById("suspend");
+					suspend.classList.add('mui-hidden');
+				}
+
+				//展示个人信息模块
+				var req = '';
+				req += '<img class="mui-media-object mui-pull-left list-headImg" src="images/head2.png">';
+				req += '<div class="mui-media-body">';
+				req += '<a href="javascript:;" style="color:#1b82d2;">';
+				req += '<span class="list-name">' + name + '</span> ';
+				req += '</a>';
+				if(type == '交通费报销') {
+					req += '<span class="list-chai" style="vertical-align: top;">交</span>';
+				} else if(type == '差旅费报销' || type == '出差申请') {
+					req += '<span class="list-chai" style="vertical-align: top;">差</span>';
+				} else if(type == '通讯费报销') {
+					req += '<span class="list-chai" style="vertical-align: top;">通</span>';
+				} else if(type == '招待费报销' || type == '招待申请') {
+					req += '<span class="list-chai" style="vertical-align: top;">待</span>';
+				} else if(type == '会议费报销' || type == '会议费申请') {
+					req += '<span class="list-chai" style="vertical-align: top;">会</span>';
+				} else if(type == '加油费报销') {
+					req += '<span class="list-chai" style="vertical-align: top;">油</span>';
+				} else if(type == '其他费报销') {
+					req += '<span class="list-chai" style="vertical-align: top;">其</span>';
+				} else {
+					req += '<span class="list-chai" style="vertical-align: top;">餐</span>';
+				}
+				req += '<span style="color: #333333;font-size: 0.42rem;margin-left: 0.15rem;">' + type + ':</span>';
+				req += '<span style="color: #cc1c1c;font-size: 0.42rem;">￥' + money + '</span>';
+				if(content == null) {
+					req += '<p class="list-content"></p>';
+				} else {
+					req += '<p class="list-content">' + content + '</p>';
+				}
+				//  req +='<p class="list-content">用于服务项目实时,用于服务服务时于服务服务于服务服务。</p>';
+				if(state !== "空") {
+					req += '<span class="list-yihedui">' + state + '</span>';
+				}
+				req += '<span class="mui-pull-right list-time">' + time + '</span>';
+				req += '</div>';
+				var content = document.getElementById("content")
+				var li = document.getElementById("information");
+				li.innerHTML = req;
+				//				content.appendChild(li.innerHTML);
+			}
+
+			plusReady();
+		</script>
+	</body>
+	<script src="js/mui.zoom.js"></script>
+	<script src="js/mui.previewimage.js"></script>
+	<script>
+		//图片预览
+		mui.previewImage(function(img) {
+			//打开预览时
+			var suspend = document.getElementById("suspend");
+			suspend.classList.add('mui-hidden');
+		}, function(img) {
+			//关闭预览时
+			if(listType == "待办") {
+				var suspend = document.getElementById("suspend");
+				suspend.classList.remove("mui-hidden");
+			}
+		});
+	</script>
+
+</html>

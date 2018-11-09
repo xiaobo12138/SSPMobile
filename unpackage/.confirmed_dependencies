@@ -1,0 +1,279 @@
+{
+  "otherDetail.html": {
+    "href": "otherDetail.html",
+    "resources": [
+      "js/mui.zoom.js",
+      "js/mui.previewimage.js",
+      "css/mui.min.css",
+      "css/label.css",
+      "js/rem.js",
+      "js/mui.min.js",
+      "js/jquery-3.1.1.min.js",
+      "js/reques.js",
+      "js/adress.js",
+      "css/master.css",
+      "images/head2.png",
+      "images/three-pin.png",
+      "images/left.png",
+      "images/5-121204193R5-50.gif"
+    ],
+    "refer": [
+      "index.html"
+    ],
+    "priority": 0
+  },
+  "trafficDetail.html": {
+    "href": "trafficDetail.html",
+    "resources": [
+      "js/mui.zoom.js",
+      "js/mui.previewimage.js",
+      "js/mui.min.js",
+      "css/mui.min.css",
+      "js/rem.js",
+      "js/reques.js",
+      "js/adress.js",
+      "css/label.css",
+      "css/master.css",
+      "images/head2.png",
+      "images/three-pin.png",
+      "images/left.png",
+      "images/5-121204193R5-50.gif"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "meetingAppleDetail.html": {
+    "href": "meetingAppleDetail.html",
+    "resources": [
+      "js/mui.zoom.js",
+      "js/mui.previewimage.js",
+      "css/mui.min.css",
+      "css/label.css",
+      "js/rem.js",
+      "js/mui.min.js",
+      "js/jquery-3.1.1.min.js",
+      "js/reques.js",
+      "js/adress.js",
+      "css/master.css",
+      "images/head2.png",
+      "images/three-pin.png",
+      "images/left.png",
+      "images/5-121204193R5-50.gif"
+    ],
+    "refer": [
+      "index.html"
+    ],
+    "priority": 0
+  },
+  "meetingExpenseDetail.html": {
+    "href": "meetingExpenseDetail.html",
+    "resources": [
+      "js/mui.zoom.js",
+      "js/mui.previewimage.js",
+      "css/mui.min.css",
+      "css/label.css",
+      "js/rem.js",
+      "js/mui.min.js",
+      "js/jquery-3.1.1.min.js",
+      "js/reques.js",
+      "js/adress.js",
+      "css/master.css",
+      "images/head2.png",
+      "images/three-pin.png",
+      "images/left.png",
+      "images/5-121204193R5-50.gif"
+    ],
+    "refer": [
+      "index.html"
+    ],
+    "priority": 0
+  },
+  "businessDetail.html": {
+    "href": "businessDetail.html",
+    "resources": [
+      "js/mui.zoom.js",
+      "js/mui.previewimage.js",
+      "js/rem.js",
+      "js/mui.min.js",
+      "css/mui.min.css",
+      "js/reques.js",
+      "js/adress.js",
+      "css/label.css",
+      "css/master.css",
+      "images/head2.png",
+      "images/plane.png",
+      "images/car.png",
+      "images/three-pin.png",
+      "images/dotted-line.jpg",
+      "images/left.png",
+      "images/5-121204193R5-50.gif"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "listDetail.html": {
+    "href": "listDetail.html",
+    "resources": [
+      "js/mui.zoom.js",
+      "js/mui.previewimage.js",
+      "js/mui.min.js",
+      "css/mui.min.css",
+      "js/rem.js",
+      "js/reques.js",
+      "js/adress.js",
+      "css/label.css",
+      "css/master.css",
+      "images/head2.png",
+      "images/car.png",
+      "images/three-pin.png",
+      "images/arrowhead.png",
+      "images/dotted-line.jpg",
+      "images/plane.png",
+      "images/left.png",
+      "images/5-121204193R5-50.gif"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "workmealDetail.html": {
+    "href": "workmealDetail.html",
+    "resources": [
+      "js/mui.zoom.js",
+      "js/mui.previewimage.js",
+      "css/mui.min.css",
+      "css/label.css",
+      "js/rem.js",
+      "js/mui.min.js",
+      "js/jquery-3.1.1.min.js",
+      "js/reques.js",
+      "js/adress.js",
+      "css/master.css",
+      "images/head2.png",
+      "images/three-pin.png",
+      "images/left.png",
+      "images/5-121204193R5-50.gif"
+    ],
+    "refer": [
+      "index.html"
+    ],
+    "priority": 0
+  },
+  "receptionapplyDetail.html": {
+    "href": "receptionapplyDetail.html",
+    "resources": [
+      "js/mui.zoom.js",
+      "js/mui.previewimage.js",
+      "css/mui.min.css",
+      "css/label.css",
+      "js/rem.js",
+      "js/mui.min.js",
+      "js/jquery-3.1.1.min.js",
+      "js/reques.js",
+      "js/adress.js",
+      "css/master.css",
+      "images/head2.png",
+      "images/three-pin.png",
+      "images/left.png",
+      "images/5-121204193R5-50.gif"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "communicationDetail.html": {
+    "href": "communicationDetail.html",
+    "resources": [
+      "js/mui.zoom.js",
+      "js/mui.previewimage.js",
+      "css/mui.min.css",
+      "css/label.css",
+      "js/rem.js",
+      "js/mui.min.js",
+      "js/reques.js",
+      "js/adress.js",
+      "css/master.css",
+      "images/head2.png",
+      "images/three-pin.png",
+      "images/left.png",
+      "images/5-121204193R5-50.gif"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "gasolineDetail.html": {
+    "href": "gasolineDetail.html",
+    "resources": [
+      "js/mui.zoom.js",
+      "js/mui.previewimage.js",
+      "css/mui.min.css",
+      "css/label.css",
+      "js/rem.js",
+      "js/mui.min.js",
+      "js/jquery-3.1.1.min.js",
+      "js/reques.js",
+      "js/adress.js",
+      "css/master.css",
+      "images/head2.png",
+      "images/three-pin.png",
+      "images/left.png",
+      "images/5-121204193R5-50.gif"
+    ],
+    "refer": [
+      "index.html"
+    ],
+    "priority": 0
+  },
+  "receptionDetail.html": {
+    "href": "receptionDetail.html",
+    "resources": [
+      "js/mui.zoom.js",
+      "js/mui.previewimage.js",
+      "css/mui.min.css",
+      "css/label.css",
+      "js/rem.js",
+      "js/mui.min.js",
+      "js/reques.js",
+      "js/adress.js",
+      "css/master.css",
+      "images/head2.png",
+      "images/three-pin.png",
+      "images/left.png",
+      "images/5-121204193R5-50.gif"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "index.html": {
+    "href": "index.html",
+    "resources": [
+      "js/rem.js",
+      "js/jquery-3.1.1.min.js",
+      "js/reques.js",
+      "images/head2.png",
+      "images/right.png",
+      "images/menu.png",
+      "images/surpass.png",
+      "css/mui.min.css",
+      "css/label.css",
+      "js/mui.min.js",
+      "js/mui.pullToRefresh.js",
+      "js/mui.pullToRefresh.material.js",
+      "js/adress.js",
+      "css/home.css",
+      "images/5-121204193R5-50.gif"
+    ],
+    "refer": [
+      "otherDetail.html",
+      "trafficDetail.html",
+      "meetingAppleDetail.html",
+      "meetingExpenseDetail.html",
+      "businessDetail.html",
+      "listDetail.html",
+      "workmealDetail.html",
+      "receptionapplyDetail.html",
+      "communicationDetail.html",
+      "gasolineDetail.html",
+      "receptionDetail.html"
+    ],
+    "priority": 0
+  }
+}

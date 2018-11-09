@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>报销审批</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<script src="js/rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/jquery-3.1.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/reques.js"></script>
+		<link rel="stylesheet" href="./css/mui.min.css">
+		<link rel="stylesheet" href="css/label.css" rel="stylesheet" />
+		<script src="./js/mui.min.js"></script>
+		<script src="./js/mui.pullToRefresh.js"></script>
+		<script src="./js/mui.pullToRefresh.material.js"></script>
+		<script src="./js/adress.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/home.css"/>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav todoList-header" id="header">
+			<a class=" mui-icon mui-icon-left-nav mui-pull-left todoList-back" onclick="goBack()"></a>
+			<h1 class="mui-title todoList-title" style="">报销审批</h1>
+		</header>
+		<div class="mui-content">
+			<div id="slider" class="mui-slider mui-fullscreen">
+				<div id="sliderSegmentedControl" class="todoList-slider mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+
+					<a class="mui-control-item mui-active" href="#item1mobile">
+						待办
+					</a>
+					<a class="mui-control-item" href="#item2mobile">
+						已办
+					</a>
+
+				</div>
+				<div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-6"></div>
+				<div class="mui-slider-group">
+					<div id="item1mobile" class="mui-slider-item mui-control-content mui-active">
+						<div id="scroll1" class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<ul class="mui-table-view " id="list">
+
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div id="item2mobile" class="mui-slider-item mui-control-content">
+						<div class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<ul class="mui-table-view" id="dolist">
+
+								</ul>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<!--点击同意，弹出的悬浮界面-->
+		<div id="middlePopover" class="mui-popover" style="height: 400px;background: white;">
+			<div>
+				<button class="mui-pull-right deletBtn" onclick="colsePover()">x</button>
+				<p class="titleP">同意</p>
+			</div>
+			<div class="row mui-input-row">
+				<textarea id='question' class="mui-input-clear question" style="width: -webkit-fill-available;margin-left: 15px;margin-right: 15px;background: #ececec;">同意</textarea>
+			</div>
+			<div id="leader" style="margin-bottom: 15px;margin-left: 15px;display: none;">
+				<label for="director" id="isLeader"></label><input type="radio" name="director" value="1" checked="checked" style="color: red;" onclick="isHidden('1')" /> 是 <input type="radio" name="director" value="0" onclick="isHidden('0')" /> 否
+			</div>
+
+			<div id="nextPeople" style="margin:15px;">
+				<p style="margin-bottom: 15px;">下一个审批人</p>
+				<table id="nextPerson" style="width: 100%;">
+				</table>
+			</div>
+			<button class="detail-agreeBtn" onclick="submit()" style="margin-right: 15px;margin-left: 15px;width: 90%;">提交</button>
+		</div>
+
+		<!--点击不同意弹出的浮层-->
+		<div id="disagreePopover" class="mui-popover" style="height: 200px;background: white;">
+			<div>
+				<button class="mui-pull-right deletBtn" onclick="colsePover()">x</button>
+				<p class="titleP">不同意</p>
+			</div>
+			<div class="row mui-input-row">
+				<textarea id='textContent' class="mui-input-clear question" placeholder="填写意见..." required="required" style="width: -webkit-fill-available;margin-left: 15px;margin-right: 15px;background: #ececec;"></textarea>
+			</div>
+			<button class="detail-agreeBtn" onclick="disSubmit()" style="margin-right: 15px;margin-left: 15px;width: 90%;">提交</button>
+		</div>
+		<!--加载动画-->
+		<div id="loadingPopover" class="mui-popover">
+			<div class="loading-block">
+				<img src="images/5-121204193R5-50.gif" style="width: 1rem;height: 1rem;">
+			</div>
+		</div>
+
+		<script type="text/javascript">
+			mui.init();
+			var dataList = new Array();
+			dodataList = new Array();
+			useruuid = "";
+			var pageCount = 1;
+
+			function getUserInfo(message) {
+				//				var jsonStr = JSON.parse(message);
+				//				useruuid = jsonStr.userUuid; 
+				//			    password = jsonStr.password;
+
+				message = "{}";
+				useruuid = '106755';
+				password = '1';
+
+				token = '';
+				showList(token); //展示列表
+				/*
+              // 先获取token
+				var url=get_Url() + '/iServer/login/getToken';
+				mui.ajax(url,{
+				 		data:{
+				 			'loginname':useruuid
+				 		},
+				 		dataType:'',
+				 		type:'get',
+				 		success:function(data){
+						   var jsonObj=JSON.parse(data);
+	                         token=jsonObj.TOKEN;
+//	                         alert(token);
+//	                         console.log(token);
+	                         
+	                        //获取TGT
+	                        var url=get_Url() + '/SSOLogin/getTGT';
+			                mui.ajax(url,{
+//			                	    contentType: "application/json;charset=utf-8",
+								data:JSON.stringify({username:useruuid,password:password}),
+								dataType:'',//服务器返回json格式数据
+								type:'post',//HTTP请求类型
+								timeout:10000,//超时时间设置为10秒；
+								headers:{
+									'token':token
+								},
+								success:function(data){
+									var tgt=data.TGT;
+									
+									//获取ticket
+									var url=get_Url() + '/iServer/SSOLogin/getTicket';
+					                mui.ajax(url,{
+										data:"{'TGT': '"+tgt+"'}",
+										dataType:'',//服务器返回json格式数据
+										type:'post',//HTTP请求类型
+										timeout:10000,//超时时间设置为10秒；
+										headers:{
+							  		        'token':token
+										},
+										success:function(data){
+											var ticket=data.ticket;
+			
+											//校验ticket
+							                var url=get_Url() + '/iServer/SSOLogin/serviceValidate';
+							                mui.ajax(url,{
+												data:"{'ticket': '"+ticket+"'}",
+												dataType:'',//服务器返回json格式数据
+												type:'post',//HTTP请求类型
+												timeout:10000,//超时时间设置为10秒；
+												headers:{
+						  		        				'token':token
+												},
+												success:function(data){
+//													mui.alert(data.message, ' ', function() {});
+//			                                         console.log(data);
+			                                         showList(token);//展示列表
+			                        
+												},
+												error:function(xhr,type,errorThrown){
+													//异常处理；
+													console.log(type);
+													mui.toast('校验ticket失败了');
+												}
+											});
+											
+										},
+										error:function(xhr,type,errorThrown){
+											//异常处理；
+											console.log(type);
+											mui.toast('获取ticket失败了');
+										}
+									});
+									
+								},
+								error:function(xhr,type,errorThrown){
+									//异常处理；
+									console.log(type);
+									mui.toast('获取TGT失败了');
+								}
+							});
+	                  
+				 		},
+				 		error:function(xhr,type,errorThrown){
+							//异常处理；
+							console.log(type);
+							mui.toast('获取token失败了');
+						}
+				});
+			  */
+
+			};
+			//页面加载时先请求接口
+			//window.onload = function() {}
+
+			//待办刷新
+			function getListData() {
+				//获取待办列表
+				var todoTable = document.getElementById('list');
+				while(todoTable.hasChildNodes()) {
+					//删除当前的子节点
+					todoTable.removeChild(todoTable.firstChild);
+				};
+				pageCount = 1;
+				var req = '';
+				var myurl = get_Url() + '/iServer/gtasks/moveList';
+				var myData = {
+					"loginUserCode": useruuid
+				};
+				$.ajax({
+					type: "get",
+					url: myurl,
+					data: myData,
+					//					headers: {
+					//						token: token
+					//					},
+					beforeSend: function() {
+						mui('#loadingPopover').popover('show');
+					},
+					complete: function() {
+						mui('#loadingPopover').popover('hide');
+					},
+					success: function(data) {
+						//把json串转化为Json对象
+						var jsonData = JSON.parse(data);
+						dataList.splice(0, dataList.length); //清空数组
+						dataList = jsonData.rows;
+						var count = dataList.length;
+						if(count <= 0) {
+							mui.alert("暂无待办数据", ' ', function() {
+
+							});
+						} else {
+							//展示列表数据 
+							for(var i = 0; i < count; i++) {
+								req += '<li name="待办" class="mui-table-view-cell todoList-todoCell" id="' + i + '" >';
+
+								req += '<img class="mui-media-object mui-pull-left list-headImg" src="images/head2.png">';
+								req += '<div class="mui-media-body">';
+								req += '<a href="javascript:;" style="color:#1b82d2;">';
+								req += '<span class="list-name">' + dataList[i].userName + '</span> ';
+								req += '</a>';
+								var type = dataList[i].instanceName;
+								if(type == '交通费报销') {
+									req += '<span class="list-chai" style="vertical-align: top;">交</span>';
+								} else if(type == '差旅费报销' || type == '出差申请') {
+									req += '<span class="list-chai" style="vertical-align: top;">差</span>';
+								} else if(type == '通讯费报销') {
+									req += '<span class="list-chai" style="vertical-align: top;">通</span>';
+								} else if(type == '招待费报销' || type == '招待申请') {
+									req += '<span class="list-chai" style="vertical-align: top;">待</span>';
+								} else if(type == '会议费报销' || type == '会议费申请') {
+									req += '<span class="list-chai" style="vertical-align: top;">会</span>';
+								} else if(type == '加油费报销') {
+									req += '<span class="list-chai" style="vertical-align: top;">油</span>';
+								} else if(type == '其他费报销') {
+									req += '<span class="list-chai" style="vertical-align: top;">其</span>';
+								} else {
+									req += '<span class="list-chai" style="vertical-align: top;">餐</span>';
+								}
+								req += '<span class="todoList-instanceName">' + dataList[i].instanceName + ':</span>';
+
+								if(type == '出差申请') {
+									req += '<span class="todoList-totalFee">' + dataList[i].travelPlace + '</span>';
+								} else if(type == '招待申请' || type == '会议费申请') {
+									var expectedCost = formatCurrency(dataList[i].expectedCost);
+									req += '<span class="todoList-totalFee" >￥' + expectedCost + '</span>';
+								} else {
+									var totalFee = formatCurrency(dataList[i].totalFee);
+									req += '<span class="todoList-totalFee" >￥' + totalFee + '</span>';
+								};
+								//超限
+								if(dataList[i].isOverProof == '1') {
+									req += '<img src="images/surpass.png" style="margin-left: 5px;width: 33px;height: 15px;"/>';
+								};
+								req += '<img src="images/right.png" class="mui-pull-right list-rightImg"/>';
+								if(type == '招待申请' || type == '会议费申请') {
+									req += '<p class="list-content">' + dataList[i].receptionProject + '</p>';
+								} else if(dataList[i].travelReason == null) {
+									req += '<p class="list-content"></p>';
+								} else {
+									req += '<p class="list-content">' + dataList[i].travelReason + '</p>';
+								};
+								var timeStr = get_Date((dataList[i].createdTime / 1000));
+								//截取字符串，显示月日时分
+								var time = timeStr.substring(5, 16);
+								req += '<span class="mui-pull-right list-time">' + time + '</span>';
+								req += '</div>';
+								req += '<div style="height: 0.5px;background: #eeeeee;margin-top: 10px;">';
+								req += '</div>';
+								req += '</li>';
+								req += '<li class="mui-table-view-cell mui-media todoList-buttonView">';
+								req += '<img src="images/menu.png" class="list-menu"/>';
+								if(dataList[i].activityCode != "Activity8" && dataList[i].activityCode != "Activity9" && dataList[i].activityCode != "Activity11" && dataList[i].activityCode != "Activity56") { //管理员不能审批
+									req += '<button class="mui-pull-right list-agreeBtn" onclick="noApprove()">同意</button>';
+									req += '<button class="mui-pull-right list-disagreeBtn" onclick="noApprove()">不同意</button>';
+								} else {
+									req += '<button class="mui-pull-right list-agreeBtn" onclick="agree(this.value)" value="' + i + '">同意</button>';
+									req += '<button class="mui-pull-right list-disagreeBtn" onclick="disAgree(this.value)" value="' + i + '">不同意</button>';
+								};
+								req += '</li>';
+							};
+							document.getElementById("list").innerHTML = req;
+						};
+					},
+					error: function(xhr, type, errerThrown) {
+						mui.toast(type);
+					}
+				});
+			};
+			//已办刷新
+			function getHadlist() {
+				//获取已办列表table
+				var table = document.getElementById('dolist');
+				//当table下还存在子节点时 循环继续
+				while(table.hasChildNodes()) {
+					//删除当前的子节点
+					table.removeChild(table.firstChild);
+				};
+				pageCount = 1;
+				console.log('刷新');
+				console.log(pageCount);
+				var req = '';
+				var myurl = get_Url() + '/iServer/gtasks/bpmMoveList';
+				//				var myDourl = get_Url() + '/iServer/gtasks/hadListAll';
+				var myDodata = {
+					"loginUserCode": useruuid,
+					'page': 1,
+					'rows': 10
+				};
+				$.ajax({
+					type: "get",
+					url: myurl,
+					data: myDodata,
+					beforeSend: function() {
+						mui('#loadingPopover').popover('show');
+					},
+					complete: function() {
+						mui('#loadingPopover').popover('hide');
+					},
+					success: function(data) {
+						//var dataList = new Array();
+						var jsonData = JSON.parse(data);
+						dodataList.splice(0, dodataList.length); //清空数组 
+						dodataList = jsonData.rows;
+						var countes = dodataList.length;
+						req = '';
+						for(var i = 0; i < countes; i++) {
+							req += '<li name="已办" class="mui-table-view-cell todoList-todoCell" id="' + i + '">';
+							req += '<img class="mui-media-object mui-pull-left list-headImg" src="images/head2.png">';
+							req += '<div class="mui-media-body">';
+							req += '<a href="javascript:;" style="color:#1b82d2;">';
+							req += '<span class="list-name">' + dodataList[i].userName + '</span> ';
+							req += '</a>';
+
+							var type = dodataList[i].instanceName;
+							if(type == '交通费报销') {
+								req += '<span class="list-chai" style="vertical-align: top;">交</span>';
+							} else if(type == '差旅费报销' || type == '出差申请') {
+								req += '<span class="list-chai" style="vertical-align: top;">差</span>';
+							} else if(type == '通讯费报销') {
+								req += '<span class="list-chai" style="vertical-align: top;">通</span>';
+							} else if(type == '招待费报销' || type == '招待申请') {
+								req += '<span class="list-chai" style="vertical-align: top;">待</span>';
+							} else if(type == '会议费报销' || type == '会议费申请') {
+								req += '<span class="list-chai" style="vertical-align: top;">会</span>';
+							} else if(type == '加油费报销') {
+								req += '<span class="list-chai" style="vertical-align: top;">油</span>';
+							} else if(type == '其他费报销') {
+								req += '<span class="list-chai" style="vertical-align: top;">其</span>';
+							} else {
+								req += '<span class="list-chai" style="vertical-align: top;">餐</span>';
+							}
+							req += '<span class="todoList-instanceName">' + dodataList[i].instanceName + ':</span>';
+
+							if(type == '出差申请') {
+								req += '<span class="todoList-totalFee">' + dodataList[i].travelPlace + '</span>';
+							} else if(type == '招待申请' || type == '会议费申请') {
+								var expectedCost = formatCurrency(dodataList[i].expectedCost);
+								req += '<span class="todoList-totalFee" >￥' + expectedCost + '</span>';
+							} else {
+								var totalFee = formatCurrency(dodataList[i].totalFee);
+								req += '<span class="todoList-totalFee" >￥' + totalFee + '</span>';
+							};
+							//超限
+							if(dodataList[i].isOverProof == '1') {
+								req += '<img src="images/surpass.png" style="margin-left: 5px;width: 33px;height: 15px;"/>';
+							};
+							req += '<img src="images/right.png" class="mui-pull-right list-rightImg"/>';
+							if(type == '招待申请' || type == '会议费申请') {
+								req += '<p class="list-content">' + dodataList[i].receptionProject + '</p>';
+							} else if(dodataList[i].travelReason == null) {
+								req += '<p class="list-content"></p>';
+							} else {
+								req += '<p class="list-content">' + dodataList[i].travelReason + '</p>';
+							};
+							req += '<span class="list-yihedui">' + dodataList[i].nextStatus + '</span>';
+							var timeStr = get_Date((dodataList[i].createdTime / 1000));
+							//截取字符串，显示月日时分
+							var time = timeStr.substring(5, 16);
+							req += '<span class="mui-pull-right list-time">' + time + '</span>';
+							req += '</div>';
+							req += '<div style="height: 0.5px;background: #eeeeee;margin-top: 10px;">';
+							req += '</div>';
+							req += '</li>';
+
+						};
+						document.getElementById("dolist").innerHTML = req;
+					},
+					error: function(xhr, type, errerThrown) {
+						mui.toast('网络异常,请稍候再试');
+					}
+				});
+
+			};
+
+			function getNewHadlist() {
+				console.log('加载更多');
+				//console.log(pageCount);
+				pageCount++;
+				console.log(pageCount);
+				var req = '';
+				var myurl = get_Url() + '/iServer/gtasks/bpmMoveList';
+				//				var myurl = get_Url() + '/iServer/gtasks/hadListAll';
+				var myData = {
+					"loginUserCode": useruuid,
+					'page': pageCount,
+					'rows': 10
+				};
+				$.ajax({
+					type: "get",
+					url: myurl,
+					data: myData,
+					beforeSend: function() {
+						mui('#loadingPopover').popover('show');
+					},
+					complete: function() {
+						mui('#loadingPopover').popover('hide');
+					},
+					success: function(data) {
+						//						console.log(data + '加载');
+						//newdataList 新数据的数组
+						var newdataList = new Array();
+						var jsonData = JSON.parse(data);
+						newdataList.splice(0, dodataList.length); //清空数组 
+						newdataList = jsonData.rows;
+						//oldLength 原数据的数组长度
+						var oldLength = dodataList.length;
+						//将新获取的数据添加到原数组。组成完整的数组
+//						dodataList = dodataList.concat(newdataList);
+						dodataList.push.apply(dodataList,newdataList)
+						//循环添加cell
+						req = '';
+						var countes = dodataList.length;
+						for(var i = 0; i < countes; i++) {
+							var newId = i + oldLength;
+
+							//											li = document.createElement('li');
+							//											li.className = 'mui-table-view-cell';
+							//req = '';
+							//id赋值应该是原数组长度加当前i
+							req += '<li name="已办" class="mui-table-view-cell todoList-todoCell" id="' + newId + '">';
+							req += '<img class="mui-media-object mui-pull-left list-headImg" src="images/head2.png">';
+							req += '<div class="mui-media-body">';
+							req += '<a href="javascript:;" style="color:#1b82d2;">';
+							req += '<span class="list-name">' + dodataList[i].userName + '</span> ';
+							req += '</a>';
+
+							var type = dodataList[i].instanceName;
+							if(type == '交通费报销') {
+								req += '<span class="list-chai" style="vertical-align: top;">交</span>';
+							} else if(type == '差旅费报销' || type == '出差申请') {
+								req += '<span class="list-chai" style="vertical-align: top;">差</span>';
+							} else if(type == '通讯费报销') {
+								req += '<span class="list-chai" style="vertical-align: top;">通</span>';
+							} else if(type == '招待费报销' || type == '招待申请') {
+								req += '<span class="list-chai" style="vertical-align: top;">待</span>';
+							} else if(type == '会议费报销' || type == '会议费申请') {
+								req += '<span class="list-chai" style="vertical-align: top;">会</span>';
+							} else if(type == '加油费报销') {
+								req += '<span class="list-chai" style="vertical-align: top;">油</span>';
+							} else if(type == '其他费报销') {
+								req += '<span class="list-chai" style="vertical-align: top;">其</span>';
+							} else {
+								req += '<span class="list-chai" style="vertical-align: top;">餐</span>';
+							}
+							req += '<span class="todoList-instanceName">' + dodataList[i].instanceName + ':</span>';
+
+							if(type == '出差申请') {
+								req += '<span class="todoList-totalFee">' + dodataList[i].travelPlace + '</span>';
+							} else if(type == '招待申请' || type == '会议费申请') {
+								var expectedCost = formatCurrency(dodataList[i].expectedCost);
+								req += '<span class="todoList-totalFee" >￥' + expectedCost + '</span>';
+							} else {
+								var totalFee = formatCurrency(dodataList[i].totalFee);
+								req += '<span class="todoList-totalFee" >￥' + totalFee + '</span>';
+							};
+							//超限
+							if(dodataList[i].isOverProof == '1') {
+								req += '<img src="images/surpass.png" style="margin-left: 5px;width: 33px;height: 15px;"/>';
+							};
+							req += '<img src="images/right.png" class="mui-pull-right list-rightImg"/>';
+							if(type == '招待申请' || type == '会议费申请') {
+								req += '<p class="list-content">' + dodataList[i].receptionProject + '</p>';
+							} else if(dodataList[i].travelReason == null) {
+								req += '<p class="list-content"> </p>';
+							} else {
+								req += '<p class="list-content">' + dodataList[i].travelReason + '</p>';
+							}
+							req += '<span class="list-yihedui">' + dodataList[i].nextStatus + '</span>';
+							var timeStr = get_Date(dodataList[i].createdTime / 1000);
+							//截取字符串，显示月日时分
+							var time = timeStr.substring(5, 16);
+							req += '<span class="mui-pull-right list-time">' + time + '</span>';
+							req += '</div>';
+							req += '<div style="height: 0.5px;background: #eeeeee;margin-top: 10px;">';
+							req += '</div>';
+							req += '</li>';
+
+						}
+						document.getElementById("dolist").innerHTML = req;
+					},
+					error: function(xhr, type, errerThrown) {
+						mui.toast('网络异常,请稍候再试');
+						//						plus.nativeUI.closeWaiting();
+					}
+				});
+			};
+			(function($) { //阻尼系数
+				var deceleration = mui.os.ios ? 0.003 : 0.0009;
+				$('.mui-scroll-wrapper').scroll({
+					bounce: false,
+					indicators: true, //是否显示滚动条
+					deceleration: deceleration
+				});
+				$.ready(function() {
+					//循环初始化所有下拉刷新，上拉加载。
+					$.each(document.querySelectorAll('.mui-slider-group .mui-scroll'), function(index, pullRefreshEl) {
+						$(pullRefreshEl).pullToRefresh({
+							down: {
+								callback: function() {
+									var self = this;
+									setTimeout(function() {
+										var ul = self.element.querySelector('.mui-table-view');
+										ul.insertBefore(createFragment(ul, index, 10, true), ul.firstChild);
+										self.endPullDownToRefresh();
+									}, 1000);
+								}
+							},
+							up: {
+        						contentnomore:'没有更多数据了',
+								callback: function() {
+									var self = this;
+									setTimeout(function() {
+										var ul = self.element.querySelector('.mui-table-view');
+										ul.appendChild(createFragment(ul, index, 10));
+										self.endPullUpToRefresh();
+									}, 1000);
+								}
+							}
+						});
+					});
+					var createFragment = function(ul, index, count, reverse) {
+						var length = ul.querySelectorAll('li').length;
+						var fragment = document.createDocumentFragment();
+						var li;
+						if(index == 0) {
+							//待办
+							if(reverse == true) {
+								getListData();
+							} else {}
+						} else {
+							if(reverse == true) {
+								getHadlist();
+							} else {
+								getNewHadlist();
+							};
+
+						};
+						return fragment;
+					};
+				});
+			})(mui);
+
+			//列表点击事件
+			mui(".mui-table-view").on('tap', '.todoList-todoCell', function(e) {
+//				console.log(dodataList[])
+				var index = $(this).index();
+				console.log(index)
+				var listType = this.getAttribute('name');
+				var state = '';
+				if(listType == "已办") {
+					state = dodataList[index].nextStatus;
+					var tt = (dodataList[index].createdTime / 1000);
+					var timeStr = get_Date(tt);
+					//截取字符串，显示月日时分
+					var time = timeStr.substring(5, 16);
+					var money = '';
+					if(dodataList[index].instanceName == "出差申请") {
+						money = dodataList[index].travelPlace;
+					} else if(dodataList[index].instanceName == "招待申请" || dodataList[index].instanceName == "会议费申请") {
+						money = formatCurrency(dodataList[index].expectedCost);
+					} else {
+						money = formatCurrency(dodataList[index].totalFee);
+					};
+
+					window.localStorage.removeItem("SSP_listToDetail");
+					dodataList[index].listType = listType;
+					dodataList[index].headImg = '';
+					dodataList[index].state = state;
+					dodataList[index].time = time;
+					dodataList[index].money = money;
+					dodataList[index].token = token;
+					dodataList[index].isOverProof = '';
+					dodataList[index].isResearchProject = '';
+
+					window.localStorage.setItem("SSP_listToDetail", JSON.stringify(dodataList[index]));
+
+					if(dodataList[index].instanceName == "交通费报销") {
+						mui.openWindow({
+							url: 'trafficDetail.html',
+							id: 'trafficDetail.html',
+						});
+					} else if(dodataList[index].instanceName == "差旅费报销") {
+						mui.openWindow({
+							url: 'listDetail.html',
+							id: 'listDetail.html',
+						});
+					} else if(dodataList[index].instanceName == "出差申请") { //出差
+						mui.openWindow({
+							url: 'businessDetail.html',
+							id: 'businessDetail.html',
+						});
+					} else if(dodataList[index].instanceName == "通讯费报销") {
+						mui.openWindow({
+							url: 'communicationDetail.html',
+							id: 'communicationDetail.html',
+						})
+					} else if(dodataList[index].instanceName == "工作餐报销") {
+						mui.openWindow({
+							url: 'workmealDetail.html',
+							id: 'workmealDetail.html',
+						})
+					} else if(dodataList[index].instanceName == "招待申请") {
+						mui.openWindow({
+							url: 'receptionapplyDetail.html',
+							id: 'receptionapplyDetail.html'
+						})
+					} else if(dodataList[index].instanceName == "招待费报销") {
+						mui.openWindow({
+							url: 'receptionDetail.html',
+							id: 'receptionDetail.html'
+						})
+					} else if(dodataList[index].instanceName == "其他费报销") {
+						mui.openWindow({
+							url: 'otherDetail.html',
+							id: 'otherDetail.html'
+						})
+					} else if(dodataList[index].instanceName == "会议费申请") {
+						mui.openWindow({
+							url: 'meetingAppleDetail.html',
+							id: 'meetingAppleDetail.html'
+						})
+					} else if(dodataList[index].instanceName == "会议费报销") {
+						mui.openWindow({
+							url: 'meetingExpenseDetail.html',
+							id: 'meetingExpenseDetail.html'
+						})
+					} else {
+						mui.openWindow({
+							url: 'gasolineDetail.html',
+							id: 'gasolineDetail.html'
+						})
+					};
+				} else { //待办
+					state = "空";
+					var tt = (dataList[index].createdTime / 1000);
+					var timeStr = get_Date(tt);
+					//截取字符串，显示月日时分
+					var time = timeStr.substring(5, 16);
+					var money = '';
+					if(dataList[index].instanceName == "出差申请") {
+						money = dataList[index].travelPlace;
+					} else if(dataList[index].instanceName == "招待申请" || dataList[index].instanceName == "会议费申请") {
+						money = formatCurrency(dataList[index].expectedCost);
+					} else {
+						money = formatCurrency(dataList[index].totalFee);
+					};
+					var isOverProof = ''; //是否超标
+					var isResearchProject = ''; //是否是科研项目
+					if(dataList[index].instanceName == "差旅费报销") {
+						isOverProof = dataList[index].isOverProof;
+						isResearchProject = dataList[index].isResearchProject;
+						//						console.log(isOverProof+'科研:'+isResearchProject);
+					};
+
+					window.localStorage.removeItem("SSP_listToDetail");
+					dataList[index].listType = listType;
+					dataList[index].headImg = '';
+					dataList[index].state = state;
+					dataList[index].time = time;
+					dataList[index].money = money;
+					dataList[index].token = token;
+					dataList[index].useruuid = useruuid;
+					dataList[index].isOverProof = isOverProof;
+					dataList[index].isResearchProject = isResearchProject;
+
+					window.localStorage.setItem("SSP_listToDetail", JSON.stringify(dataList[index]));
+
+					if(dataList[index].instanceName == "交通费报销") {
+						mui.openWindow({
+							url: 'trafficDetail.html',
+							id: 'trafficDetail.html',
+						});
+					} else if(dataList[index].instanceName == "差旅费报销") {
+						mui.openWindow({
+							url: 'listDetail.html',
+							id: 'listDetail.html',
+						});
+					} else if(dataList[index].instanceName == "出差申请") {
+						mui.openWindow({
+							url: 'businessDetail.html',
+							id: 'businessDetail.html',
+						});
+					} else if(dataList[index].instanceName == "通讯费报销") {
+						mui.openWindow({
+							url: 'communicationDetail.html',
+							id: 'communicationDetail.html',
+						})
+					} else if(dataList[index].instanceName == "工作餐报销") {
+						mui.openWindow({
+							url: 'workmealDetail.html',
+							id: 'workmealDetail.html',
+						})
+					} else if(dataList[index].instanceName == "招待申请") {
+						mui.openWindow({
+							url: 'receptionapplyDetail.html',
+							id: 'receptionapplyDetail.html',
+						})
+					} else if(dataList[index].instanceName == "招待费报销") {
+						mui.openWindow({
+							url: 'receptionDetail.html',
+							id: 'receptionDetail.html'
+						})
+					} else if(dataList[index].instanceName == "其他费报销") {
+						mui.openWindow({
+							url: 'otherDetail.html',
+							id: 'otherDetail.html'
+						})
+					} else if(dataList[index].instanceName == "会议费申请") {
+						mui.openWindow({
+							url: 'meetingAppleDetail.html',
+							id: 'meetingAppleDetail.html'
+						})
+					} else if(dataList[index].instanceName == "会议费报销") {
+						mui.openWindow({
+							url: 'meetingExpenseDetail.html',
+							id: 'meetingExpenseDetail.html'
+						})
+					} else {
+						mui.openWindow({
+							url: 'gasolineDetail.html',
+							id: 'gasolineDetail.html'
+						})
+					};
+				};
+
+			});
+			//导航栏返回按钮
+			function goBack() {
+				railsMobilePlatform.closepage();
+			};
+
+			//				var u = navigator.userAgent;
+			//				if(document.referrer === '') {
+			//					railsMobilePlatform.closepage();
+			//				} else {
+			//					window.history.back(-1);
+			//				}
+
+			//关闭浮层
+			function colsePover() {
+				//mui('#topPopover').popover('show',document.getElementById("list")); // 将id为list的元素放在想要弹出的位置
+				mui('#middlePopover').popover('hide');
+				mui('#disagreePopover').popover('hide');
+			};
+
+			function noApprove() {
+				mui.alert("报销管理员请到PC端处理", ' ', function() {
+
+				});
+			};
+			//是否主任审批
+			function isHidden(flag) {
+				var nextPeople = document.getElementById("nextPeople");
+				if(flag == 0) { //不需要主任审批，隐藏下一审批人
+					nextPeople.style.display = "none";
+				} else {
+					nextPeople.style.display = "block";
+				};
+			};
+			//不同意按钮
+			function disAgree(index) {
+				listIndex = index;
+				mui('#disagreePopover').popover('show');
+			};
+			//同意按钮
+			function agree(index) {
+				listIndex = index;
+				mui('#middlePopover').popover('show');
+				var text = document.getElementById("question");
+				text.value = '同意';
+				var nextPeople = document.getElementById("nextPeople");
+				var activity = document.getElementById("leader");
+				if(dataList[index].instanceName == "差旅费报销") {
+					activity.style.display = "block";
+					activityCode = dataList[index].activityCode;
+					var isLeader = document.getElementById("isLeader");
+					if(activityCode == "Activity8") { //此人是经理，上级是主任
+						isLeader.innerHTML = "是否主任审批：";
+						//判断选的是否让主任审批
+						var director = document.getElementsByName("director");
+						for(i = 0; i < director.length; i++) {
+							if(director[i].checked) {
+								Is_NeedMasterApproval = director[i].value;
+							};
+						};
+						if(Is_NeedMasterApproval == 0) { //不需要主任审批
+							nextPeople.style.display = "none";
+						} else {
+							nextPeople.style.display = "block";
+						};
+					} else { //此人是主任，所长
+						activity.style.display = "none";
+						nextPeople.style.display = "block";
+					};
+				} else { //非差旅
+					activity.style.display = "none";
+					nextPeople.style.display = "block";
+				};
+
+				//删除table下的所有tr
+				function deletetr() {
+					var ta = document.getElementById("nextPerson");
+					var trObj = ta.getElementsByTagName("tr");
+					for(var i = trObj.length - 1; i >= 0; i--) {
+						ta.deleteRow(i);
+					};
+				};
+
+				//先调选择下个审批人接口
+				var myurl = get_Url() + '/iServer/test/getNextNode?';
+				var myData1 = {
+					workItemId: dataList[index].workItemId,
+					instanceId: dataList[index].instanceId
+				};
+				$.ajax({
+					type: "post",
+					url: myurl,
+					data: myData1,
+					//					headers: {
+					//						token: token
+					//					},
+					success: function(data) {
+						var jsonData = JSON.parse(data);
+						deletetr();
+						//纸质单据送达的不显示
+						var peopleArr = jsonData.Result.SNodeList[0].OrgList;
+						personArr = new Array();
+
+						personArr = new Array();
+						for(var i = 0; i < peopleArr.length; i++) {
+							if(peopleArr[i].OrgName != "纸质单据送达") {
+								personArr.push(peopleArr[i]);
+							};
+						};
+						var countP = personArr.length;
+						var nextPeople = document.getElementById("nextPeople");
+						if(countP == 0) {
+							nextPeople.style.display = "none";
+						}
+						var dex = Math.round(countP / 3); //小数转成整数（会四舍五入）
+
+						if(countP % 3 == 0) {
+							dex1 = dex;
+						} else {
+							dex1 = dex + 1;
+						}
+
+						for(var i = 0; i < dex1; i++) {
+							var personReq = "";
+							personReq += '<tr style="width: 100%;">';
+							for(var j = i * 3; j <= (i + 1) * 3 - 1; j++) {
+								if(j < countP) {
+									if(i == 0 && j == 0) {
+										personReq += '<td align="left"><label style="width: (100%/3);"><input type="radio" name="nextDirector" value="1" checked="checked"/></label>' + "   " + personArr[j].OrgName + '</td>';
+									} else {
+										personReq += '<td align="left"><label style="width: (100%/3);"><input type="radio" name="nextDirector" value="1"/></label>' + "   " + personArr[j].OrgName + '</td>';
+									}
+								}
+							}
+							personReq += '</tr>';
+							//                 			personReq +='<tr style="height: 10px;"></tr>';
+
+							var table = document.getElementById("nextPerson");
+							var tr = document.createElement("tr");
+							tr.innerHTML = personReq;
+							table.appendChild(tr);
+						}
+
+					},
+					error: function(xhr, type, errerThrown) {
+						console.log(type);
+						mui.toast('失败了');
+					}
+				});
+
+			}
+			//不同意提交
+			function disSubmit() {
+				//关闭浮层
+				mui('#disagreePopover').popover('hide');
+				var text = document.getElementById("textContent");
+				if(text.value.length <= 0) {
+					//提示：请写明不同意的原因
+					mui.alert("请写明不同意的原因", ' ', function() {
+						mui('#disagreePopover').popover('show');
+					});
+				} else {
+					var disUrl = get_Url() + '/iServer/common/rejectApply?';
+					var myData = {
+						instanceId: dataList[listIndex].instanceId,
+						userCode: useruuid,
+						checkMsg: text.value, //审批意见
+						type: '1', //驳回类型（1：驳回到起始节点 2：驳回到上个节点 3：驳回到指定节点）
+						workFlowCode: workflowCodeType(dataList[listIndex].instanceName)
+					}
+					$.ajax({
+						type: "post",
+						url: disUrl,
+						data: myData,
+						beforeSend: function() {
+							mui('#loadingPopover').popover('show');
+						},
+						complete: function() {
+							mui('#loadingPopover').popover('hide');
+						},
+						success: function(data) {
+							var jsonData = JSON.parse(data);
+							mui.alert(jsonData.msg, ' ', function() {
+								text.value = "";
+								//返回刷新列表
+								showList(token);
+							});
+						},
+						error: function(xhr, type, errerThrown) {
+							console.log(type);
+							mui.toast('失败了');
+						}
+					});
+				}
+			}
+
+			//同意提交
+			function submit() {
+				//关闭浮层
+				mui('#middlePopover').popover('hide');
+				var text = document.getElementById("question");
+				var nextDirector = document.getElementsByName("nextDirector");
+				if(nextDirector.length > 0) {
+					for(i = 0; i < nextDirector.length; i++) {
+						if(nextDirector[i].checked) {
+							personId = personArr[i].OrgCode;
+						}
+					}
+				} else {
+					if(dataList[listIndex].instanceName == "出差申请" || dataList[listIndex].instanceName == "招待申请" || dataList[listIndex].instanceName == "会议费申请") {
+						personId = '';
+					} else {
+						personId = 'zzdjsd';
+					}
+				}
+				if(dataList[listIndex].instanceName == "差旅费报销") {
+					var isLeader = document.getElementsByName("director");
+					for(i = 0; i < isLeader.length; i++) {
+						if(isLeader[i].checked) {
+							Is_NeedMasterApproval = isLeader[i].value;
+						}
+					}
+					if(Is_NeedMasterApproval == 0) { //不需要主任审批
+						personId = '';
+					}
+
+					//			      	 console.log('id:'+dataList[listIndex].id);
+					//			         console.log('instanceId:'+dataList[listIndex].instanceId);
+					//			         console.log('approvalOpinion:'+text.value);
+					//			         console.log('loginUserCode:'+useruuid);
+					//			         console.log('approveType:'+dataList[listIndex].activityCode);
+					//			         console.log('approvalNextUser:'+personId);
+					//			         console.log('Is_NeedMasterApproval:'+Is_NeedMasterApproval);
+					//			         console.log('Is_OverProof:'+dataList[listIndex].isOverProof);
+					//			         console.log('Is_ResearchProject:'+dataList[listIndex].isResearchProject);
+
+					//调差旅同意接口
+					var myurl = get_Url() + '/iServer/travel/submitApply?';
+					var myData = {
+						id: dataList[listIndex].id,
+						instanceId: dataList[listIndex].instanceId,
+						approvalOpinion: text.value,
+						loginUserCode: useruuid, //自己的账号
+						unitCode: '', //提单人部门Code：空
+						payment: '', //支付方法：空
+						TravelQuery: '',
+						mployeesAccount: '',
+						userCode: '',
+						approveType: dataList[listIndex].activityCode,
+						approvalNextUser: personId, //下一节点审批人id
+						Is_NeedMasterApproval: Is_NeedMasterApproval, //是否需要主任审批：1：需要；0：不需要
+						Is_OverProof: dataList[listIndex].isOverProof, //是否超标：1：是；0：否
+						Is_ResearchProject: dataList[listIndex].isResearchProject, //是否是科研项目：1：是；0：否
+						approvalState: '同意' //审批状态
+					}
+					$.ajax({
+						type: "post",
+						url: myurl,
+						data: myData,
+						//						headers: {
+						//							token: token
+						//						},
+						beforeSend: function() {
+							mui('#loadingPopover').popover('show');
+						},
+						complete: function() {
+							mui('#loadingPopover').popover('hide');
+						},
+						success: function(data) {
+							var jsonData = JSON.parse(data);
+							mui.alert(jsonData.msg, ' ', function() {
+								text.value = "";
+								showList(token);
+							});
+						},
+						error: function(xhr, type, errerThrown) {
+							console.log(type);
+							mui.toast('失败了');
+						}
+					});
+				} else if(dataList[listIndex].instanceName == "交通费报销") {
+					var isLeader = document.getElementsByName("director");
+					for(i = 0; i < isLeader.length; i++) {
+						if(isLeader[i].checked) {
+							isNeedManager = isLeader[i].value;
+						}
+					}
+					//调交通同意接口
+					var myurl = get_Url() + '/iServer/traffic/submitApply?';
+					var myData = {
+						id: dataList[listIndex].id,
+						instanceId: dataList[listIndex].instanceId,
+						approvalOpinion: text.value,
+						loginUserCode: useruuid, //自己的账号
+						unitCode: '', //提单人部门Code：空
+						payment: '', //支付方法：空
+						account: '', //员工帐号:空
+						approvalNextUser: personId, //下一节点审批人id
+						approvalState: '同意', //审批状态
+						expenseId: '',
+						expenseCode: ''
+					}
+					$.ajax({
+						type: "post",
+						url: myurl,
+						data: myData,
+						//						headers: {
+						//							token: token
+						//						},
+						beforeSend: function() {
+							mui('#loadingPopover').popover('show');
+						},
+						complete: function() {
+							mui('#loadingPopover').popover('hide');
+						},
+						success: function(data) {
+							var jsonData = JSON.parse(data);
+							mui.alert(jsonData.msg, ' ', function() {
+								text.value = "";
+								//返回刷新列表
+								showList(token);
+							});
+						},
+						error: function(xhr, type, errerThrown) {
+							console.log(type);
+							mui.toast('失败了');
+						}
+					});
+				} else if(dataList[listIndex].instanceName == "出差申请") {
+					//调出差同意接口
+					var myurl = get_Url() + '/iServer/travelApply/submitApply?';
+					var myData = {
+						id: dataList[listIndex].id,
+						instanceId: dataList[listIndex].instanceId,
+						approvalOpinion: text.value,
+						loginUserCode: useruuid, //自己的账号
+						unitCode: '', //提单人部门Code：空
+						approvalNextUser: personId, //下一节点审批人id
+						approvalState: '同意' //审批状态
+					}
+					$.ajax({
+						type: "post",
+						url: myurl,
+						data: myData,
+						//						headers: {
+						//							token: token
+						//						},
+						beforeSend: function() {
+							mui('#loadingPopover').popover('show');
+						},
+						complete: function() {
+							mui('#loadingPopover').popover('hide');
+						},
+						success: function(data) {
+							var jsonData = JSON.parse(data);
+							mui.alert(jsonData.msg, ' ', function() {
+								text.value = "";
+								//返回刷新列表
+								showList(token);
+							});
+						},
+						error: function(xhr, type, errerThrown) {
+							console.log(type);
+							mui.toast('失败了');
+						}
+					});
+
+				} else if(dataList[listIndex].instanceName == "通讯费报销") {
+					//调通信费同意接口
+					var myurl = get_Url() + '/iServer/communication/submitApply?';
+					var myData = {
+						id: dataList[listIndex].id, //20180508300031820989
+						instanceId: dataList[listIndex].instanceId, //d55d9b00-247a-4cfc-8531-e59ca5c3f3fe
+						approvalOpinion: text.value, //意见
+						loginUserCode: useruuid, //自己的账号
+						unitCode: '', //提单人部门Code：空/
+						approvalNextUser: personId, //下一节点审批人id
+						approvalState: '同意' //审批状态
+					}
+					$.ajax({
+						type: "post",
+						url: myurl,
+						data: myData,
+						//						headers: {
+						//							token: token
+						//						},
+						beforeSend: function() {
+							mui('#loadingPopover').popover('show');
+						},
+						complete: function() {
+							mui('#loadingPopover').popover('hide');
+						},
+						success: function(data) {
+							var jsonData = JSON.parse(data);
+							mui.alert(jsonData.msg, ' ', function() {
+								text.value = "";
+								//返回刷新列表
+								showList(token);
+							});
+						},
+						error: function(xhr, type, errerThrown) {
+							console.log(type);
+							mui.toast('失败了');
+						}
+					});
+
+				} else if(dataList[listIndex].instanceName == "工作餐报销") {
+					//调工作餐报销接口
+					var myurl = get_Url() + '/iServer/workMeal/submitApply?';
+					var myData = {
+						id: dataList[listIndex].id, //20180508300031820989
+						instanceId: dataList[listIndex].instanceId, //d55d9b00-247a-4cfc-8531-e59ca5c3f3fe
+						approvalOpinion: text.value, //意见
+						loginUserCode: useruuid, //自己的账号
+						unitCode: '', //提单人部门Code：空/
+						approvalNextUser: personId, //下一节点审批人id
+						approvalState: '同意' //审批状态
+					}
+					$.ajax({
+						type: "post",
+						url: myurl,
+						data: myData,
+						//						headers: {
+						//							token: token
+						//						},
+						beforeSend: function() {
+							mui('#loadingPopover').popover('show');
+						},
+						complete: function() {
+							mui('#loadingPopover').popover('hide');
+						},
+						success: function(data) {
+							var jsonData = JSON.parse(data);
+							mui.alert(jsonData.msg, ' ', function() {
+								text.value = "";
+								//返回刷新列表
+								showList(token);
+							});
+						},
+						error: function(xhr, type, errerThrown) {
+							console.log(type);
+							mui.toast('失败了');
+						}
+					});
+
+				} else if(dataList[listIndex].instanceName == "招待申请") {
+					var url = get_Url() + '/iServer/receptionapply/submitApply';
+					var myData = {
+						id: dataList[listIndex].id, //20180508300031820989
+						instanceId: dataList[listIndex].instanceId, //d55d9b00-247a-4cfc-8531-e59ca5c3f3fe
+						approvalOpinion: text.value, //意见
+						loginUserCode: useruuid, //自己的账号
+						unitCode: '', //提单人部门Code：空/
+						approvalNextUser: personId, //下一节点审批人id
+						approvalState: '同意', //审批状态
+						expenseId: '', //报销人ID
+						expenseCode: '' //报销人Code
+					};
+					$.ajax({
+						type: "post",
+						url: url,
+						data: myData,
+						beforeSend: function() {
+							mui('#loadingPopover').popover('show');
+						},
+						complete: function() {
+							mui('#loadingPopover').popover('hide');
+						},
+						success: function(data) {
+							var jsonData = JSON.parse(data);
+							mui.alert(jsonData.msg, ' ', function() {
+								//返回上层界面
+								goBack();
+							});
+						},
+						error: function(xhr, type, errorThrown) {
+							//异常处理；
+							console.log(type);
+							mui.toast('失败了');
+						}
+					});
+				} else if(dataList[listIndex].instanceName == "招待费报销") {
+					var myurl = get_Url() + '/iServer/reception/submitApply?';
+					var myData = {
+						id: dataList[listIndex].id, //20180508300031820989
+						instanceId: dataList[listIndex].instanceId, //d55d9b00-247a-4cfc-8531-e59ca5c3f3fe
+						approvalOpinion: text.value, //意见
+						loginUserCode: useruuid, //自己的账号
+						approvalNextUser: personId, //下一节点审批人id
+						approvalState: '同意', //审批状态
+					}
+					$.ajax({
+						type: "post",
+						url: myurl,
+						data: myData,
+						beforeSend: function() {
+							mui('#loadingPopover').popover('show');
+						},
+						complete: function() {
+							mui('#loadingPopover').popover('hide');
+						},
+						success: function(data) {
+							var jsonData = JSON.parse(data);
+							mui.alert(jsonData.msg, ' ', function() {
+								text.value = "";
+								//返回刷新列表
+								showList(token);
+							});
+
+						},
+						error: function(xhr, type, errorThrown) {
+							//异常处理；
+							console.log(type);
+							mui.toast('失败了');
+						}
+					});
+
+				} else if(dataList[listIndex].instanceName == "其他费报销") {
+					var url = get_Url() + '/iServer/traffic/submitApply?';
+					mui.ajax(url, {
+						data: {
+							id: dataList[listIndex].id, //20180508300031820989
+							instanceId: dataList[listIndex].instanceId, //d55d9b00-247a-4cfc-8531-e59ca5c3f3fe
+							approvalOpinion: text.value, //意见
+							loginUserCode: useruuid, //自己的账号
+							approvalNextUser: personId, //下一节点审批人id
+							approvalState: '同意', //审批状态
+						},
+						dataType: '',
+						type: 'post',
+						headers: {
+							'token': token
+						},
+						beforeSend: function() {
+							mui('#loadingPopover').popover('show');
+						},
+						complete: function() {
+							mui('#loadingPopover').popover('hide');
+						},
+						success: function(data) {
+							var jsonData = JSON.parse(data);
+							mui.alert(jsonData.msg, ' ', function() {
+								text.value = "";
+								//返回刷新列表
+								showList(token);
+							});
+						},
+						error: function(xhr, type, errerThrown) {
+							//							mui.toast(type);
+							mui.toast('失败了');
+
+						}
+					});
+				} else if(dataList[listIndex].instanceName == "会议费申请") {
+					var url = get_Url() + '/iServer/meetingApply/submitApply?';
+					mui.ajax(url, {
+						data: {
+							id: dataList[listIndex].id, //20180508300031820989
+							instanceId: dataList[listIndex].instanceId, //d55d9b00-247a-4cfc-8531-e59ca5c3f3fe
+							approvalOpinion: text.value, //意见
+							loginUserCode: useruuid, //自己的账号
+							approvalNextUser: personId, //下一节点审批人id
+							approvalState: '同意', //审批状态
+						},
+						dataType: '',
+						type: 'post',
+						headers: {
+							'token': token
+						},
+						beforeSend: function() {
+							mui('#loadingPopover').popover('show');
+						},
+						complete: function() {
+							mui('#loadingPopover').popover('hide');
+						},
+						success: function(data) {
+							var jsonData = JSON.parse(data);
+							mui.alert(jsonData.msg, ' ', function() {
+								text.value = "";
+								//返回刷新列表
+								showList(token);
+							});
+						},
+						error: function(xhr, type, errerThrown) {
+							//							mui.toast(type);
+							mui.toast('失败了');
+
+						}
+					});
+				} else if(dataList[listIndex].instanceName == "会议费报销") {
+					var url = get_Url() + '/iServer/meeting/submitApply?';
+					mui.ajax(url, {
+						data: {
+							id: dataList[listIndex].id, //20180508300031820989
+							instanceId: dataList[listIndex].instanceId, //d55d9b00-247a-4cfc-8531-e59ca5c3f3fe
+							approvalOpinion: text.value, //意见
+							loginUserCode: useruuid, //自己的账号
+							approvalNextUser: personId, //下一节点审批人id
+							approvalState: '同意', //审批状态
+						},
+						dataType: '',
+						type: 'post',
+						headers: {
+							'token': token
+						},
+						beforeSend: function() {
+							mui('#loadingPopover').popover('show');
+						},
+						complete: function() {
+							mui('#loadingPopover').popover('hide');
+						},
+						success: function(data) {
+							var jsonData = JSON.parse(data);
+							mui.alert(jsonData.msg, ' ', function() {
+								text.value = "";
+								//返回刷新列表
+								showList(token);
+							});
+						},
+						error: function(xhr, type, errerThrown) {
+							//							mui.toast(type);
+							mui.toast('失败了');
+
+						}
+					});
+				} else {
+					var url = get_Url() + '/iServer/refuelingFee/submitApply?';
+					mui.ajax(url, {
+						data: {
+							id: dataList[listIndex].id, //20180508300031820989
+							instanceId: dataList[listIndex].instanceId, //d55d9b00-247a-4cfc-8531-e59ca5c3f3fe
+							approvalOpinion: text.value, //意见
+							loginUserCode: useruuid, //自己的账号
+							approvalNextUser: personId, //下一节点审批人id
+							approvalState: '同意', //审批状态
+						},
+						dataType: '',
+						type: 'post',
+						headers: {
+							'token': token
+						},
+						beforeSend: function() {
+							mui('#loadingPopover').popover('show');
+						},
+						complete: function() {
+							mui('#loadingPopover').popover('hide');
+						},
+						success: function(data) {
+							var jsonData = JSON.parse(data);
+							mui.alert(jsonData.msg, ' ', function() {
+								text.value = "";
+								//返回刷新列表
+								showList(token);
+							});
+						},
+						error: function(xhr, type, errerThrown) {
+							//							mui.toast(type);
+							mui.toast('失败了');
+
+						}
+					})
+				}
+			}
+			this.getUserInfo();
+		</script>
+	</body>
+
+</html>
